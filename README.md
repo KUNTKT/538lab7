@@ -1,7 +1,7 @@
 # EE538 — Heaps and Hashing Lab
 
-- Name:
-- Student ID:
+- Name: Kuntian Tang
+- Student ID: 4833814938
 - Compiler and version: clang via Zig 0.17.1 (`zig c++ -std=c++17 -Wall -Wextra -Wpedantic`)
 - Extra credit attempted: Yes
 
