@@ -5,30 +5,46 @@
 namespace lab {
 
 std::size_t ChainedHashTable::bucket_index(const std::string& key) const {
-    // TODO: Apply the polynomial recurrence to each unsigned byte.
-    (void)key;
-    throw std::logic_error("TODO: ChainedHashTable::bucket_index");
+    std::size_t h = 0;
+    for (const char ch : key) {
+        const unsigned char c = static_cast<unsigned char>(ch);
+        h = (31 * h + c) % kBucketCount;
+    }
+    return h;
 }
 
 void ChainedHashTable::put(const std::string& key, int value) {
-    // TODO: Find the bucket. Update an equal key, or add a new entry.
-    // Different keys may share a bucket; compare the actual strings.
-    (void)key;
-    (void)value;
-    throw std::logic_error("TODO: ChainedHashTable::put");
+    auto& chain = buckets_[bucket_index(key)];
+    for (Entry& entry : chain) {
+        if (entry.key == key) {
+            entry.value = value;  // duplicate key: update, size unchanged
+            return;
+        }
+    }
+    chain.push_back(Entry{key, value});
+    ++size_;
 }
 
 std::optional<int> ChainedHashTable::find(const std::string& key) const {
-    // TODO: Search only the selected chain. Return std::nullopt if absent.
-    (void)key;
-    throw std::logic_error("TODO: ChainedHashTable::find");
+    const auto& chain = buckets_[bucket_index(key)];
+    for (const Entry& entry : chain) {
+        if (entry.key == key) {
+            return entry.value;
+        }
+    }
+    return std::nullopt;
 }
 
 bool ChainedHashTable::erase(const std::string& key) {
-    // TODO: Erase the matching list entry, if any, and maintain size_.
-    // Do not use an iterator after erasing the entry it refers to.
-    (void)key;
-    throw std::logic_error("TODO: ChainedHashTable::erase");
+    auto& chain = buckets_[bucket_index(key)];
+    for (auto it = chain.begin(); it != chain.end(); ++it) {
+        if (it->key == key) {
+            chain.erase(it);
+            --size_;
+            return true;
+        }
+    }
+    return false;
 }
 
 }  // namespace lab

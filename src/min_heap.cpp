@@ -6,39 +6,68 @@
 namespace lab {
 
 void MinHeap::build(const std::vector<int>& values) {
-    // TODO: Replace data_, then sift down from the last internal node.
-    // Be careful: an unsigned index cannot represent -1.
-    (void)values;
-    throw std::logic_error("TODO: MinHeap::build");
+    data_ = values;
+    // Sift down every internal node, from the last one back to the root.
+    // Count i from n/2 down to 1 and use i - 1 to avoid unsigned underflow.
+    for (std::size_t i = data_.size() / 2; i > 0; --i) {
+        sift_down(i - 1);
+    }
 }
 
 void MinHeap::push(int value) {
-    // TODO: Append, then sift up.
-    (void)value;
-    throw std::logic_error("TODO: MinHeap::push");
+    data_.push_back(value);
+    sift_up(data_.size() - 1);
 }
 
 int MinHeap::pop() {
-    // TODO: Check for an empty heap, save the root, replace it with the last
-    // element, shrink the array, restore order, and return the saved value.
-    throw std::logic_error("TODO: MinHeap::pop");
+    if (data_.empty()) {
+        throw std::out_of_range("MinHeap::pop on empty heap");
+    }
+    const int result = data_.front();
+    data_.front() = data_.back();
+    data_.pop_back();
+    if (!data_.empty()) {
+        sift_down(0);
+    }
+    return result;
 }
 
 int MinHeap::top() const {
-    // TODO: Check for an empty heap, then read the root without changing it.
-    throw std::logic_error("TODO: MinHeap::top");
+    if (data_.empty()) {
+        throw std::out_of_range("MinHeap::top on empty heap");
+    }
+    return data_.front();
 }
 
 void MinHeap::sift_up(std::size_t index) {
-    // TODO: Compare with the parent while index > 0.
-    (void)index;
-    throw std::logic_error("TODO: MinHeap::sift_up");
+    while (index > 0) {
+        const std::size_t parent = (index - 1) / 2;
+        if (data_[parent] <= data_[index]) {
+            break;
+        }
+        std::swap(data_[parent], data_[index]);
+        index = parent;
+    }
 }
 
 void MinHeap::sift_down(std::size_t index) {
-    // TODO: Select the smaller existing child. Swap only when necessary.
-    (void)index;
-    throw std::logic_error("TODO: MinHeap::sift_down");
+    const std::size_t n = data_.size();
+    while (true) {
+        const std::size_t left = 2 * index + 1;
+        if (left >= n) {
+            break;
+        }
+        const std::size_t right = left + 1;
+        std::size_t smallest = left;
+        if (right < n && data_[right] < data_[left]) {
+            smallest = right;
+        }
+        if (data_[index] <= data_[smallest]) {
+            break;
+        }
+        std::swap(data_[index], data_[smallest]);
+        index = smallest;
+    }
 }
 
 }  // namespace lab

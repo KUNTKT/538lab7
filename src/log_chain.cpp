@@ -5,23 +5,27 @@
 namespace lab {
 
 void LogChain::append(const std::string& record) {
-    // EXTRA CREDIT TODO: Use crypto::hash_record, then store a LogEntry.
-    (void)record;
-    throw std::logic_error("TODO: LogChain::append (extra credit)");
+    const crypto::Digest previous = final_digest();
+    entries_.push_back(LogEntry{record, crypto::hash_record(previous, record)});
 }
 
 crypto::Digest LogChain::final_digest() const {
-    // EXTRA CREDIT TODO: Handle both an empty and a nonempty chain.
-    throw std::logic_error("TODO: LogChain::final_digest (extra credit)");
+    if (entries_.empty()) {
+        return initial_digest();
+    }
+    return entries_.back().digest;
 }
 
 bool LogChain::verify(const std::vector<LogEntry>& entries,
                       const crypto::Digest& trusted_final) {
-    // EXTRA CREDIT TODO: Recompute from initial_digest(), compare each
-    // stored digest, and finally compare with the independent trusted anchor.
-    (void)entries;
-    (void)trusted_final;
-    throw std::logic_error("TODO: LogChain::verify (extra credit)");
+    crypto::Digest current = initial_digest();
+    for (const LogEntry& entry : entries) {
+        current = crypto::hash_record(current, entry.record);
+        if (current != entry.digest) {
+            return false;
+        }
+    }
+    return current == trusted_final;
 }
 
 }  // namespace lab
